@@ -24,6 +24,11 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 module.exports = {
   solidity: "0.8.4",
   networks: {
+    ganache: {
+      url: process.env.ganache_url || "",
+      accounts:
+        process.env.ganache_pk !== undefined ? [process.env.ganache_pk] : [],
+    },
     bscTest: {
       url: process.env.BSC_TEST_URL || "",
       accounts:

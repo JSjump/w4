@@ -25,8 +25,8 @@ async function main() {
   const MyTokenMarket = await ethers.getContractFactory("MyTokenMarket");
   const myTokenMarket = await MyTokenMarket.deploy(
     myToken.address,
-    "0xD02f5B3b2D061Eac5189160059e17d40296B1dA3",
-    "0x55104754d5b295fc6c7A4C7ee4B89f6a0fc751d3"
+    "0x2de5F6b681d262aBdD4F4cF50E69Ed41749df1d6",
+    "0x7D0690Da02EBB5938A6F6B2BD079B063Cfc6680D"
   );
 
   await myTokenMarket.deployed();
@@ -35,10 +35,10 @@ async function main() {
 
   //   初始化provider
   const provider = new ethers.providers.JsonRpcProvider(
-    process.env.BSC_TEST_URL
+    process.env.ganache_url
   );
 
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+  const wallet = new ethers.Wallet(process.env.ganache_pk, provider);
 
   const totalBSC = await myToken.balanceOf(wallet.address);
   console.log("totalBSC", totalBSC);
@@ -54,13 +54,14 @@ async function main() {
   console.log("添加流动性");
 
   let b = await myToken.balanceOf(wallet.address);
+  console.log("wallet.address", wallet.address);
 
   console.log("持有token:" + ethers.utils.formatUnits(b, 18));
 
   const buyEthAmount = ethers.utils.parseUnits("0.01", 18);
   console.log("---buyEthAmount", buyEthAmount);
   const out = await myTokenMarket.buyToken("0", { value: buyEthAmount });
-  console.log("-out", out);
+  //   console.log("-out", out);
 
   b = await myToken.balanceOf(wallet.address);
   console.log("购买到:" + ethers.utils.formatUnits(b, 18));
