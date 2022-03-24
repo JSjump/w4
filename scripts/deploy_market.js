@@ -8,12 +8,12 @@ const { writeAddr } = require("./artifact_log.js");
 require("dotenv").config();
 
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
+  //   初始化provider
+  const provider = new ethers.providers.JsonRpcProvider(
+    process.env.ganache_url
+  );
+
+  const wallet = new ethers.Wallet(process.env.ganache_pk, provider);
 
   const MyToken = await ethers.getContractFactory("MyToken");
   const myToken = await MyToken.deploy(ethers.utils.parseUnits("1", 18));
@@ -29,16 +29,25 @@ async function main() {
     "0x7D0690Da02EBB5938A6F6B2BD079B063Cfc6680D"
   );
 
+  // 发布masterCHef
+  // We get the contract to deploy
+  // const MasterChef = await ethers.getContractFactory("MasterChef");
+  // const masterChef = await MasterChef.deploy(
+  //   "0x30af936FEBCB88Ce642e3bC0502a7fBb26FCB857",
+  //   wallet.address,
+  //   ethers?.utils?.parseUnits("1000", 18),
+  //   10000,
+  //   42
+  // );
+
+  // await masterChef.deployed();
+
+  // console.log("masterChef deployed to:", masterChef.address);
+  // await writeAddr(masterChef.address, "MasterChef", network.name);
+
   await myTokenMarket.deployed();
   console.log("MyTokenMarket deployed to:", myTokenMarket.address);
   await writeAddr(myTokenMarket.address, "MyTokenMarket", network.name);
-
-  //   初始化provider
-  const provider = new ethers.providers.JsonRpcProvider(
-    process.env.ganache_url
-  );
-
-  const wallet = new ethers.Wallet(process.env.ganache_pk, provider);
 
   const totalBSC = await myToken.balanceOf(wallet.address);
   console.log("totalBSC", totalBSC);
@@ -46,6 +55,10 @@ async function main() {
   await myToken.approve(myTokenMarket.address, ethers.constants.MaxUint256);
 
   const ethAmount = ethers.utils.parseUnits("0.05", 18);
+
+  // masterChef新增池子
+  // await masterChef.add(1,);
+
   console.log("----ethAmount", ethAmount);
   await myTokenMarket.AddLiquidity(ethers.utils.parseUnits("0.1", 18), {
     value: ethAmount,
@@ -61,7 +74,7 @@ async function main() {
   const buyEthAmount = ethers.utils.parseUnits("0.01", 18);
   console.log("---buyEthAmount", buyEthAmount);
   const out = await myTokenMarket.buyToken("0", { value: buyEthAmount });
-  //   console.log("-out", out);
+  console.log("-out", out);
 
   b = await myToken.balanceOf(wallet.address);
   console.log("购买到:" + ethers.utils.formatUnits(b, 18));
